@@ -3,7 +3,7 @@
   "displayName": "Protect My Env",
   "description": "Protects your .env files from accidental screen exposure.",
   "version": "0.1.2",
-  "publisher": "marcusp",
+  "publisher": "marcuspmd",
   "icon": "icon.png",
   "repository": {
     "type": "git",
