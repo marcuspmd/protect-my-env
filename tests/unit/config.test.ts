@@ -27,40 +27,4 @@ describe('ConfigManager', () => {
     expect(ConfigManager.getProtectComments()).toBe(false);
   });
 
-  it('adds rule to workspace target when folder is open', async () => {
-    setConfig({ rules: ['EXISTING'] });
-    const vs = vscode as any;
-    vs.workspace.workspaceFolders = [{ uri: { fsPath: '/workspace' } }];
-
-    await ConfigManager.addRule('NEW_RULE');
-
-    expect(vs.__mock.getConfigMock.update).toHaveBeenCalledWith(
-      'rules',
-      ['EXISTING', 'NEW_RULE'],
-      vscode.ConfigurationTarget.Workspace
-    );
-  });
-
-  it('adds rule to global target when no workspace folder exists', async () => {
-    setConfig({ rules: [] });
-    const vs = vscode as any;
-    vs.workspace.workspaceFolders = [];
-
-    await ConfigManager.addRule('A_RULE');
-
-    expect(vs.__mock.getConfigMock.update).toHaveBeenCalledWith(
-      'rules',
-      ['A_RULE'],
-      vscode.ConfigurationTarget.Global
-    );
-  });
-
-  it('does not update when rule already exists', async () => {
-    setConfig({ rules: ['DUPLICATE'] });
-    const vs = vscode as any;
-
-    await ConfigManager.addRule('DUPLICATE');
-
-    expect(vs.__mock.getConfigMock.update).not.toHaveBeenCalled();
-  });
 });

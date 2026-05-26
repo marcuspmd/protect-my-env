@@ -36,6 +36,7 @@ interface PairViewModel {
   value: string;
   comment: string;
   shouldMask: boolean;
+  commentShouldMask: boolean;
   lineIndex: number;
   startCharacter: number;
   endCharacter: number;
@@ -47,6 +48,7 @@ interface CommentViewModel {
   type: 'comment';
   id: string;
   text: string;
+  shouldMask: boolean;
   lineIndex: number;
 }
 
@@ -345,6 +347,7 @@ export class EnvSecureEditorProvider implements vscode.CustomTextEditorProvider,
   private buildRows(document: vscode.TextDocument): EnvRowViewModel[] {
     const rows: EnvRowViewModel[] = [];
     const parsed = EnvParser.parse(document.getText());
+    const protectComments = ConfigManager.getProtectComments();
 
     for (const line of parsed) {
       if (line.type === 'empty') {
@@ -356,6 +359,7 @@ export class EnvSecureEditorProvider implements vscode.CustomTextEditorProvider,
           type: 'comment',
           id: `${line.lineIndex}:comment`,
           text: line.originalText.trim(),
+          shouldMask: protectComments,
           lineIndex: line.lineIndex,
         });
         continue;
@@ -367,6 +371,7 @@ export class EnvSecureEditorProvider implements vscode.CustomTextEditorProvider,
 
       const start = document.positionAt(document.offsetAt(new vscode.Position(line.lineIndex, 0)) + line.valueStartOffset);
       const end = document.positionAt(document.offsetAt(new vscode.Position(line.lineIndex, 0)) + line.valueEndOffset);
+      const shouldMask = this.matcherManager.shouldMask(line.key);
 
       rows.push({
         type: 'pair',
@@ -374,7 +379,8 @@ export class EnvSecureEditorProvider implements vscode.CustomTextEditorProvider,
         key: line.key,
         value: line.value,
         comment: this.getInlineComment(line),
-        shouldMask: this.matcherManager.shouldMask(line.key),
+        shouldMask,
+        commentShouldMask: protectComments && shouldMask,
         lineIndex: line.lineIndex,
         startCharacter: start.character,
         endCharacter: end.character,
@@ -831,7 +837,7 @@ export class EnvSecureEditorProvider implements vscode.CustomTextEditorProvider,
       </div>
     </div>
     <div class="banner">
-      Opening .env here avoids the first-frame flash from text decorations.
+      Opening .env here avoids exposing values before the secure view is ready.
       Use reveal only when needed and for as little time as possible.
     </div>
     <div class="toolbar" aria-label="Env view controls">
@@ -942,6 +948,23 @@ export class EnvSecureEditorProvider implements vscode.CustomTextEditorProvider,
 
     function isValueMasked(row) {
       return !isValueRevealed(row);
+    }
+
+    function isCommentMasked(row) {
+      if (row.type === 'pair') {
+        return row.commentShouldMask && isValueMasked(row);
+      }
+
+      return row.shouldMask && !revealAll;
+    }
+
+    function commentText(row) {
+      const text = row.type === 'pair' ? row.comment : row.text;
+      if (!text) {
+        return '';
+      }
+
+      return isCommentMasked(row) ? mask(text) : text;
     }
 
     function mask(value) {
@@ -1117,7 +1140,7 @@ export class EnvSecureEditorProvider implements vscode.CustomTextEditorProvider,
       tr.className = 'comment-row';
       td.className = 'comment-row-cell';
       td.colSpan = 4;
-      td.textContent = row.text;
+      td.textContent = commentText(row);
       tr.appendChild(td);
       rows.appendChild(tr);
     }
@@ -1162,7 +1185,7 @@ export class EnvSecureEditorProvider implements vscode.CustomTextEditorProvider,
 
       const commentCell = document.createElement('td');
       commentCell.className = 'comment';
-      commentCell.textContent = row.comment;
+      commentCell.textContent = commentText(row);
 
       const { actionCell, actionButtons } = createActionsCell();
 

@@ -50,27 +50,4 @@ export class ConfigManager {
   public static getProtectComments(): boolean {
     return this.getConfiguration().get<boolean>('protectComments', false);
   }
-
-  /**
-   * Dynamically adds a key to the rules list, persisting it.
-   */
-  public static async addRule(key: string): Promise<void> {
-    const config = this.getConfiguration();
-    const currentRules = this.getRules();
-    
-    // Normalize key to uppercase/trim as .env keys are case-sensitive
-    const normalizedKey = key.trim();
-    if (currentRules.includes(normalizedKey)) {
-      return;
-    }
-
-    const updatedRules = [...currentRules, normalizedKey];
-    
-    // Choose Workspace target if a project is loaded, otherwise Global
-    const target = vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders.length > 0
-      ? vscode.ConfigurationTarget.Workspace
-      : vscode.ConfigurationTarget.Global;
-
-    await config.update('rules', updatedRules, target);
-  }
 }
