@@ -1,0 +1,9 @@
+node_modules/
+out/
+.vscode-test/
+*.vsix
+
+# Protect My Env: Environment files
+.env
+.env.*
+.env.local
