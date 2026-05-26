@@ -115,7 +115,7 @@
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
-    "@types/node": "^18.11.18",
+    "@types/node": "^25.9.1",
     "@types/vscode": "^1.75.0",
     "esbuild": "^0.25.0",
     "fast-check": "^4.8.0",
