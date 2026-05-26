@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { MaskManager } from '../../src/maskManager';
 import { ObfuscationMatcherManager } from '../../src/matchers';
+import { EnvParser } from '../../src/parser';
 import { createDocument, createEditor } from '../utils/editorFactory';
 import { setConfig } from '../utils/configMock';
 
@@ -93,6 +94,50 @@ describe('MaskManager', () => {
     expect(decorations.length).toBeGreaterThanOrEqual(2);
   });
 
+  it('uses minimum mask length of 1 when maskLength is non-positive', () => {
+    setConfig({
+      maskCharacter: '*',
+      maskLength: -1,
+      protectComments: true,
+    });
+
+    const manager = createManager();
+    const doc = createDocument('/tmp/.env', '# header\nSECRET=value # note');
+    const editor = createEditor(doc);
+
+    manager.applyDecorations(editor as any);
+
+    const decorations = editor.setDecorations.mock.calls[0][1];
+    expect(decorations).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          renderOptions: expect.objectContaining({
+            after: expect.objectContaining({ contentText: '*' }),
+          }),
+        }),
+      ])
+    );
+  });
+
+  it('uses source text lengths when maskLength is zero', () => {
+    setConfig({
+      maskCharacter: '*',
+      maskLength: 0,
+      protectComments: true,
+    });
+
+    const manager = createManager();
+    const doc = createDocument('/tmp/.env', '# note\nSECRET=value # remark');
+    const editor = createEditor(doc);
+
+    manager.applyDecorations(editor as any);
+
+    const decorations = editor.setDecorations.mock.calls[0][1] as any[];
+    expect(decorations.some((d) => d.renderOptions.after.contentText.length === '# note'.length)).toBe(true);
+    expect(decorations.some((d) => d.renderOptions.after.contentText.length === 'value'.length)).toBe(true);
+    expect(decorations.some((d) => d.renderOptions.after.contentText.length === '# remark'.length)).toBe(true);
+  });
+
   it('updates context key based on active editor', () => {
     const manager = createManager();
     const envDoc = createDocument('/tmp/.env', 'A=1');
@@ -111,6 +156,30 @@ describe('MaskManager', () => {
 
     expect(manager.isEnvFile(envDoc as any)).toBe(true);
     expect(manager.isEnvFile(txtDoc as any)).toBe(false);
+  });
+
+  it('returns early in warmup for non-env file', () => {
+    const manager = createManager();
+    const parseSpy = jest.spyOn(EnvParser, 'parse');
+    const txtDoc = createDocument('/tmp/file.txt', 'A=1');
+
+    manager.warmupDocument(txtDoc as any);
+
+    expect(parseSpy).not.toHaveBeenCalled();
+    parseSpy.mockRestore();
+  });
+
+  it('reuses parsed cache for same document version', () => {
+    const manager = createManager();
+    const parseSpy = jest.spyOn(EnvParser, 'parse');
+    const doc = createDocument('/tmp/.env', 'SECRET=value') as any;
+    doc.version = 1;
+
+    manager.warmupDocument(doc);
+    manager.warmupDocument(doc);
+
+    expect(parseSpy).toHaveBeenCalledTimes(1);
+    parseSpy.mockRestore();
   });
 
   it('disposes decoration type', () => {

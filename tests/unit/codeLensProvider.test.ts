@@ -57,6 +57,16 @@ describe('EnvCodeLensProvider', () => {
     expect(result[0].command?.command).toBe('protectMyEnv.addRule');
   });
 
+  it('skips non-pair parsed lines while building lenses', () => {
+    const { provider } = setup();
+    const doc = createDocument('/tmp/.env', '# comment\n\nSECRET=value');
+
+    const result = provider.provideCodeLenses(doc as any, {} as any);
+
+    expect(result).toHaveLength(1);
+    expect(result[0].command?.title).toContain('SECRET');
+  });
+
   it('fires refresh event', () => {
     const { provider } = setup();
     const listener = jest.fn();
