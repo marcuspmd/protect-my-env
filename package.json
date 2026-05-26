@@ -2,7 +2,7 @@
   "name": "protect-my-env",
   "displayName": "Protect My Env",
   "description": "Protects your .env files from accidental screen exposure.",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "publisher": "marcuspmd",
   "icon": "icon.png",
   "repository": {
