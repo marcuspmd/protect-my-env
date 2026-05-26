@@ -1,0 +1,76 @@
+name: Publish Extension
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions: read-all
+
+jobs:
+  build-and-publish:
+    name: Build & Publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '20.x'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install vsce
+        run: npm install -g @vscode/vsce
+
+      - name: Package extension
+        run: vsce package --no-dependencies
+        id: package
+
+      - name: Get .vsix filename
+        id: vsix
+        run: echo "file=$(ls *.vsix)" >> $GITHUB_OUTPUT
+
+      - name: Install cosign
+        env:
+          COSIGN_VERSION: v2.4.1
+        run: |
+          curl -sSfL -o cosign "https://github.com/sigstore/cosign/releases/download/${COSIGN_VERSION}/cosign-linux-amd64"
+          curl -sSfL -o cosign_checksums.txt "https://github.com/sigstore/cosign/releases/download/${COSIGN_VERSION}/cosign_checksums.txt"
+          grep " cosign-linux-amd64$" cosign_checksums.txt | shasum -a 256 -c -
+          chmod +x cosign
+          sudo mv cosign /usr/local/bin/cosign
+          cosign version
+
+      - name: Sign VSIX artifact (keyless)
+        env:
+          COSIGN_YES: "true"
+        run: |
+          cosign sign-blob "${{ steps.vsix.outputs.file }}" \
+            --bundle "${{ steps.vsix.outputs.file }}.bundle" \
+            --output-signature "${{ steps.vsix.outputs.file }}.sig" \
+            --output-certificate "${{ steps.vsix.outputs.file }}.crt"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.6.2
+        with:
+          files: |
+            ${{ steps.vsix.outputs.file }}
+            ${{ steps.vsix.outputs.file }}.sig
+            ${{ steps.vsix.outputs.file }}.crt
+            ${{ steps.vsix.outputs.file }}.bundle
+          generate_release_notes: true
+
+      - name: Publish to VS Code Marketplace
+        if: ${{ secrets.VSCE_PAT != '' }}
+        run: vsce publish --no-dependencies
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}

@@ -229,6 +229,47 @@ describe('EnvSecureEditorProvider webview', () => {
     expect(html).toContain('syncTextIconButton');
     expect(html).toContain("iconButton('edit', 'Edit'");
     expect(html).toContain('sortKeyButton.addEventListener');
+    expect(html).toContain('function commentText(row)');
+    expect(html).toContain('td.textContent = commentText(row);');
+    expect(html).toContain('commentCell.textContent = commentText(row);');
+  });
+
+  it('marks comments for masking when comment protection is enabled', () => {
+    setConfig({
+      maskCharacter: '*',
+      maskLength: 4,
+      protectComments: true,
+    });
+
+    const provider = createProvider();
+    const doc = createDocument('/tmp/.env', '# App config\nTOKEN=abc # auth token');
+    const rows = (provider as any).buildRows(doc);
+
+    expect(rows[0]).toEqual(
+      expect.objectContaining({
+        type: 'comment',
+        text: '# App config',
+        shouldMask: true,
+      })
+    );
+    expect(rows[1]).toEqual(
+      expect.objectContaining({
+        type: 'pair',
+        key: 'TOKEN',
+        comment: '# auth token',
+        shouldMask: true,
+        commentShouldMask: true,
+      })
+    );
+  });
+
+  it('leaves comments unmasked when comment protection is disabled', () => {
+    const provider = createProvider();
+    const doc = createDocument('/tmp/.env', '# App config\nTOKEN=abc # auth token');
+    const rows = (provider as any).buildRows(doc);
+
+    expect(rows[0]).toEqual(expect.objectContaining({ type: 'comment', shouldMask: false }));
+    expect(rows[1]).toEqual(expect.objectContaining({ type: 'pair', commentShouldMask: false }));
   });
 
   it('marks duplicate keys with warnings in rows', () => {

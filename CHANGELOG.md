@@ -6,6 +6,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and 
 
 ## [Unreleased]
 
+### Changed
+
+- Removed the legacy CodeLens and text-editor decoration masking flow so **Open as text** opens a plain VS Code editor without Protect My Env overlays.
+- Moved optional comment masking into the secure custom editor.
+
 ## [0.1.0] - 2024-01-01
 
 ### Added

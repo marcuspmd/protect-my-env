@@ -13,9 +13,14 @@ The following versions are currently supported with security updates:
 
 If you discover a security vulnerability, please do **not** open a public issue.
 
-Please report it privately by sending an email to:
+Please report it privately using one of the channels below:
 
-- `marcusmazzon(at)gmail.com`
+- GitHub Security Advisories (preferred): https://github.com/marcuspmd/protect-my-env/security/advisories/new
+- Email: [marcusmazzon@gmail.com](mailto:marcusmazzon@gmail.com)
+
+You can also review repository security information here:
+
+- https://github.com/marcuspmd/protect-my-env/security
 
 When reporting, include:
 

@@ -64,13 +64,13 @@ Every time you open a `.env` file in VS Code, your secrets are visible in plain 
 | Feature | Description |
 |---|---|
 | 🔒 **Secure Editor** | `.env` files open masked by default — no plaintext flash |
-| 👁️ **Per-key Reveal** | Reveal or hide individual values with a single click via CodeLens |
-| 🌐 **Reveal All / Hide All** | Toolbar buttons to toggle all values at once |
+| 👁️ **Per-key Reveal** | Reveal or hide individual values with row action icons in the secure editor |
+| 🌐 **Reveal All / Hide All** | Toggle all masked values from the secure editor header |
 | 🔍 **Search & Sort** | Filter by key or comment; sort by key column without touching file order |
 | 🎭 **Two Masking Modes** | `all` masks every key; `pattern` masks only keys matching glob patterns |
-| 💬 **Comment Protection** | Optionally mask full-line and inline comments too |
+| 💬 **Comment Protection** | Optionally mask full-line and inline comments in the secure editor |
 | ✏️ **Inline Editing** | Edit values directly in the secure view |
-| 📝 **Open as Text** | Fall back to the standard VS Code editor any time |
+| 📝 **Open as Text** | Fall back to the standard VS Code editor without masking overlays |
 
 ---
 
@@ -104,12 +104,8 @@ Then in VS Code: **Extensions → ··· → Install from VSIX…** and select t
 
 1. Open any `.env`, `.env.local`, `.env.production`, or similar file.
 2. The file opens automatically in **Secure .env Mode** — values are masked from the first render.
-3. Use the **CodeLens** actions above each key:
-   - **Reveal KEY** — temporarily show the value
-   - **Hide KEY** — mask it again
-4. Use the **toolbar buttons** to control all values at once:
-   - **Reveal All Values** (`👁`)
-   - **Hide All Values** (`👁‍🗨`)
+3. Use each row's action icons to reveal, copy, edit, add, or delete values.
+4. Use the secure editor header to reveal or hide all masked values at once.
 
 ---
 
@@ -121,7 +117,7 @@ The custom editor opens `.env` files in a table view where secrets are masked be
 - **Click the Key column header** to sort the view without altering the file.
 - **Full-line comments** appear as comment rows; **inline comments** show in a separate column.
 - **Row action icons** let you reveal, edit, add, or delete values (hover for tooltips).
-- Click **Open as text** at any time to switch to the regular VS Code editor.
+- Click **Open as text** at any time to switch to the regular VS Code editor without Protect My Env CodeLens or masking decorations.
 
 ---
 
