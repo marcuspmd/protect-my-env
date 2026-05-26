@@ -43,22 +43,17 @@ export class MaskManager implements vscode.Disposable {
 
     const maskChar = ConfigManager.getMaskCharacter();
     const maskLenSetting = ConfigManager.getMaskLength();
+    const protectComments = ConfigManager.getProtectComments();
 
     for (const line of parsedLines) {
-      if (line.type !== 'pair' || !line.key || !line.value || line.valueStartOffset === undefined || line.valueEndOffset === undefined) {
-        continue;
-      }
-
-      // Check if this key should be masked under current config
-      const matchesRules = this.matcherManager.shouldMask(line.key);
-      const isRevealed = docRevealedKeys.has(line.key);
-
-      if (matchesRules && !isRevealed) {
-        const startPos = document.positionAt(document.offsetAt(new vscode.Position(line.lineIndex, 0)) + line.valueStartOffset);
-        const endPos = document.positionAt(document.offsetAt(new vscode.Position(line.lineIndex, 0)) + line.valueEndOffset);
+      // 1. Mask full-line comments (or lines treated as comments) if protectComments is enabled
+      if (line.type === 'comment' && protectComments && line.commentStartOffset !== undefined && line.commentEndOffset !== undefined) {
+        const startPos = document.positionAt(document.offsetAt(new vscode.Position(line.lineIndex, 0)) + line.commentStartOffset);
+        const endPos = document.positionAt(document.offsetAt(new vscode.Position(line.lineIndex, 0)) + line.commentEndOffset);
         const range = new vscode.Range(startPos, endPos);
 
-        const visualLength = maskLenSetting === 0 ? line.value.length : maskLenSetting;
+        const commentText = line.originalText.substring(line.commentStartOffset, line.commentEndOffset);
+        const visualLength = maskLenSetting === 0 ? commentText.length : maskLenSetting;
         const maskText = maskChar.repeat(visualLength > 0 ? visualLength : 1);
 
         decorationOptions.push({
@@ -67,10 +62,60 @@ export class MaskManager implements vscode.Disposable {
             after: {
               contentText: maskText,
               color: new vscode.ThemeColor('editorGhostText.foreground'),
-              fontStyle: 'normal',
+              fontStyle: 'italic',
             },
           },
         });
+        continue;
+      }
+
+      // 2. Mask key-value variables
+      if (line.type === 'pair' && line.key && line.value && line.valueStartOffset !== undefined && line.valueEndOffset !== undefined) {
+        // Check if this key should be masked under current config
+        const matchesRules = this.matcherManager.shouldMask(line.key);
+        const isRevealed = docRevealedKeys.has(line.key);
+
+        if (matchesRules && !isRevealed) {
+          const startPos = document.positionAt(document.offsetAt(new vscode.Position(line.lineIndex, 0)) + line.valueStartOffset);
+          const endPos = document.positionAt(document.offsetAt(new vscode.Position(line.lineIndex, 0)) + line.valueEndOffset);
+          const range = new vscode.Range(startPos, endPos);
+
+          const visualLength = maskLenSetting === 0 ? line.value.length : maskLenSetting;
+          const maskText = maskChar.repeat(visualLength > 0 ? visualLength : 1);
+
+          decorationOptions.push({
+            range,
+            renderOptions: {
+              after: {
+                contentText: maskText,
+                color: new vscode.ThemeColor('editorGhostText.foreground'),
+                fontStyle: 'normal',
+              },
+            },
+          });
+
+          // Also mask its inline comment if present and protectComments is enabled
+          if (protectComments && line.commentStartOffset !== undefined && line.commentEndOffset !== undefined) {
+            const commentStartPos = document.positionAt(document.offsetAt(new vscode.Position(line.lineIndex, 0)) + line.commentStartOffset);
+            const commentEndPos = document.positionAt(document.offsetAt(new vscode.Position(line.lineIndex, 0)) + line.commentEndOffset);
+            const commentRange = new vscode.Range(commentStartPos, commentEndPos);
+
+            const commentText = line.originalText.substring(line.commentStartOffset, line.commentEndOffset);
+            const commentVisualLength = maskLenSetting === 0 ? commentText.length : maskLenSetting;
+            const commentMaskText = maskChar.repeat(commentVisualLength > 0 ? commentVisualLength : 1);
+
+            decorationOptions.push({
+              range: commentRange,
+              renderOptions: {
+                after: {
+                  contentText: commentMaskText,
+                  color: new vscode.ThemeColor('editorGhostText.foreground'),
+                  fontStyle: 'italic',
+                },
+              },
+            });
+          }
+        }
       }
     }
 

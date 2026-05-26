@@ -7,13 +7,14 @@ Esta extensão protege arquivos `.env` contra exposição visual acidental de da
 ## ✨ Recursos
 
 1. **Ocultação de Valores:** Oculta visualmente os valores das variáveis de ambiente com `••••••••` ou com comprimento customizado, mantendo as chaves legíveis.
-2. **Ações Rápidas Inline (CodeLens):**
-   - `👁️ Reveal KEY`: Revela individualmente o valor de uma variável específica.
+2. **Ocultação de Comentários (Opcional):** Permite mascarar comentários de linha inteira (ex: `# Config`) e comentários inline (ex: `DB_PASS=123 # senha`). Comentários inline são revelados dinamicamente junto com o valor da sua variável correspondente.
+3. **Ações Rápidas Inline (CodeLens):**
+   - `👁️ Reveal KEY`: Revela individualmente o valor de uma variável específica e seu comentário inline.
    - `🙈 Hide KEY`: Mascara novamente a variável revelada.
    - `➕ Hide KEY`: Adiciona a variável selecionada às regras personalizadas de ocultação.
-3. **Controles Globais do Editor:** Botões dedicados na barra de ferramentas do editor (canto superior direito) para **Revelar Tudo** (`👁️`) ou **Esconder Tudo** (`🙈`).
-4. **Filtros por Padrões (Wildcards):** Oculte chaves usando padrões clássicos (ex: `*_SECRET`, `*_KEY`, `*_PASSWORD`, `*_TOKEN`).
-5. **Mitigação de Agentes de IA:** Comando rápido na paleta de comandos para gerar ou atualizar regras no `.gitignore` e no `.copilotignore` para instruir os agentes de IA a ignorarem a indexação de arquivos de ambiente.
+4. **Controles Globais do Editor:** Botões dedicados na barra de ferramentas do editor (canto superior direito) para **Revelar Tudo** (`👁️`) ou **Esconder Tudo** (`🙈`).
+5. **Filtros por Padrões (Wildcards):** Oculte chaves usando padrões clássicos (ex: `*_SECRET`, `*_KEY`, `*_PASSWORD`, `*_TOKEN`).
+6. **Mitigação de Agentes de IA:** Comando rápido na paleta de comandos para gerar ou atualizar regras no `.gitignore` e no `.copilotignore` para instruir os agentes de IA a ignorarem a indexação de arquivos de ambiente.
 
 ---
 
@@ -26,6 +27,7 @@ Você pode configurar o comportamento da extensão em suas configurações do VS
 * `protectMyEnv.rules`: Lista exata de chaves a ocultar (gerenciada automaticamente ao clicar no CodeLens `➕ Hide KEY`).
 * `protectMyEnv.maskCharacter`: Caractere visual de máscara. *Padrão: `"•"`*.
 * `protectMyEnv.maskLength`: Número fixo de caracteres exibidos. Se configurado como `0`, o tamanho visual corresponderá ao comprimento real do valor da variável. *Padrão: `8`*.
+* `protectMyEnv.protectComments`: Se habilitado (`true`), oculta visualmente comentários (linha inteira e inline) sob as mesmas regras de máscara. *Padrão: `false`*.
 
 ---
 

@@ -45,6 +45,13 @@ export class ConfigManager {
   }
 
   /**
+   * Gets whether to protect comments in .env files.
+   */
+  public static getProtectComments(): boolean {
+    return this.getConfiguration().get<boolean>('protectComments', false);
+  }
+
+  /**
    * Dynamically adds a key to the rules list, persisting it.
    */
   public static async addRule(key: string): Promise<void> {

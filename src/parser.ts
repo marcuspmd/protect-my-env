@@ -6,6 +6,8 @@ export interface EnvLine {
   value?: string;
   valueStartOffset?: number;
   valueEndOffset?: number;
+  commentStartOffset?: number;
+  commentEndOffset?: number;
 }
 
 export class EnvParser {
@@ -34,10 +36,13 @@ export class EnvParser {
 
     // Check for full line comment
     if (trimmed.startsWith('#')) {
+      const commentIdx = lineText.indexOf('#');
       return {
         lineIndex,
         originalText: lineText,
         type: 'comment',
+        commentStartOffset: commentIdx !== -1 ? commentIdx : 0,
+        commentEndOffset: lineText.length,
       };
     }
 
@@ -45,10 +50,13 @@ export class EnvParser {
     const equalIndex = lineText.indexOf('=');
     if (equalIndex === -1) {
       // Treat invalid syntax lines as comments to avoid decorating them
+      const hashIdx = lineText.indexOf('#');
       return {
         lineIndex,
         originalText: lineText,
         type: 'comment',
+        commentStartOffset: hashIdx !== -1 ? hashIdx : undefined,
+        commentEndOffset: hashIdx !== -1 ? lineText.length : undefined,
       };
     }
 
@@ -58,10 +66,13 @@ export class EnvParser {
     // Validate the key format (must look like a variable name)
     const keyMatch = keyPart.match(/^\s*([A-Za-z0-9_.-]+)\s*$/);
     if (!keyMatch) {
+      const hashIdx = lineText.indexOf('#');
       return {
         lineIndex,
         originalText: lineText,
         type: 'comment',
+        commentStartOffset: hashIdx !== -1 ? hashIdx : undefined,
+        commentEndOffset: hashIdx !== -1 ? lineText.length : undefined,
       };
     }
 
@@ -75,6 +86,7 @@ export class EnvParser {
 
     const absoluteStart = equalIndex + 1 + valStart;
     let absoluteEnd = absoluteStart;
+    let commentStart: number | undefined;
 
     if (valStart < valuePart.length) {
       const firstChar = valuePart[valStart];
@@ -100,6 +112,13 @@ export class EnvParser {
 
         if (foundClosing) {
           absoluteEnd = equalIndex + 1 + valEnd + 1;
+          
+          // Check for inline comment after the quoted value
+          const remainder = valuePart.substring(valEnd + 1);
+          const commentMatch = remainder.match(/\s#/);
+          if (commentMatch && commentMatch.index !== undefined) {
+            commentStart = equalIndex + 1 + (valEnd + 1) + commentMatch.index + 1;
+          }
         } else {
           // If no closing quote, consume the rest of the line (except trailing space)
           let endIdx = valuePart.length;
@@ -115,6 +134,7 @@ export class EnvParser {
 
         if (commentMatch && commentMatch.index !== undefined) {
           valEndOffset = valStart + commentMatch.index;
+          commentStart = equalIndex + 1 + valStart + commentMatch.index + 1;
         }
 
         // Trim trailing space from the value
@@ -136,6 +156,8 @@ export class EnvParser {
       value,
       valueStartOffset: absoluteStart,
       valueEndOffset: absoluteEnd,
+      commentStartOffset: commentStart,
+      commentEndOffset: commentStart !== undefined ? lineText.length : undefined,
     };
   }
 }

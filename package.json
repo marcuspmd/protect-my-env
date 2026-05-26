@@ -63,6 +63,11 @@
           "type": "number",
           "default": 8,
           "description": "Fixed length of the masked text. Set to 0 to match the exact length of the original value."
+        },
+        "protectMyEnv.protectComments": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to also mask comments (full line and inline comments) in .env files."
         }
       }
     },
