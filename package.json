@@ -4,6 +4,7 @@
   "description": "Protects your .env files from accidental screen exposure and keeps them safe from AI agents.",
   "version": "0.1.0",
   "publisher": "marcusp",
+  "icon": "icon.png",
   "engines": {
     "vscode": "^1.75.0"
   },
