@@ -1,7 +1,7 @@
 # Protect My Env
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/marcusp/protect-my-env/main/icon.png" alt="Protect My Env Icon" width="128" />
+  <img src="https://raw.githubusercontent.com/marcuspmd/protect-my-env/master/icon.png" alt="Protect My Env Icon" width="128" />
 </p>
 
 <p align="center">
@@ -20,9 +20,36 @@
   </a>
 </p>
 
+<p align="center">
+  <a href="https://github.com/marcuspmd/protect-my-env/actions/workflows/ci.yml">
+    <img src="https://github.com/marcuspmd/protect-my-env/actions/workflows/ci.yml/badge.svg" alt="CI" />
+  </a>
+  <a href="https://github.com/marcuspmd/protect-my-env/actions/workflows/codeql.yml">
+    <img src="https://github.com/marcuspmd/protect-my-env/actions/workflows/codeql.yml/badge.svg" alt="CodeQL" />
+  </a>
+  <a href="https://scorecard.dev/viewer/?uri=github.com/marcuspmd/protect-my-env">
+    <img src="https://api.securityscorecards.dev/projects/github.com/marcuspmd/protect-my-env/badge" alt="OpenSSF Scorecard" />
+  </a>
+  <a href="https://codecov.io/gh/marcuspmd/protect-my-env">
+    <img src="https://codecov.io/gh/marcuspmd/protect-my-env/graph/badge.svg" alt="Coverage" />
+  </a>
+</p>
+
 ---
 
-![Protect My Env Banner](https://raw.githubusercontent.com/marcusp/protect-my-env/main/docs/preview-real.png)
+![Protect My Env Banner](https://raw.githubusercontent.com/marcuspmd/protect-my-env/master/docs/preview-real.png)
+
+---
+
+## 🔐 Privacy & Security
+
+**Your secrets never leave your machine.**
+
+- ✅ **Zero data collection** — no environment variables, keys, or values are ever recorded, stored, or transmitted anywhere.
+- ✅ **No remote calls** — the extension works entirely offline, with no telemetry, no analytics, and no external servers.
+- ✅ **Total privacy** — everything happens locally inside your VS Code editor.
+
+> **⚠️ Disclaimer:** This extension does **not** protect your `.env` files from AI agents (such as GitHub Copilot, Cursor, or similar tools) that have direct access to your workspace files. We do **not** encrypt or obfuscate file contents on disk — the data remains readable by any process with file system access. **Protect My Env is designed solely to prevent accidental exposure during screen sharing, recordings, live coding sessions, and pair programming.** It is not a security tool for AI context isolation.
 
 ---
 
@@ -49,7 +76,7 @@ Every time you open a `.env` file in VS Code, your secrets are visible in plain 
 
 ## Preview
 
-![Protect My Env in action](https://raw.githubusercontent.com/marcusp/protect-my-env/main/docs/preview-real.png)
+![Protect My Env in action](https://raw.githubusercontent.com/marcuspmd/protect-my-env/master/docs/preview-real.png)
 
 ---
 
@@ -145,7 +172,7 @@ Add any of the following to your `settings.json`:
 ### Setup
 
 ```bash
-git clone https://github.com/marcusp/protect-my-env.git
+git clone https://github.com/marcuspmd/protect-my-env.git
 cd protect-my-env
 npm install
 npm run compile
@@ -171,7 +198,7 @@ Contributions are welcome! Please read [CONTRIBUTING.md](./CONTRIBUTING.md) befo
 
 ## License
 
-[MIT](./LICENSE) © Marcus P
+[MIT](./LICENSE) © Marcus Paulo M Dias
 
 ## Publishing
 
@@ -190,6 +217,4 @@ npm run vscode:prepublish
 - npm run test:watch
 - npm run test:coverage
 
-## License
 
-Choose and add a license before publishing (for example, MIT).

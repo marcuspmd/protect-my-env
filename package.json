@@ -7,12 +7,12 @@
   "icon": "icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/marcusp/protect-my-env"
+    "url": "https://github.com/marcuspmd/protect-my-env"
   },
   "bugs": {
-    "url": "https://github.com/marcusp/protect-my-env/issues"
+    "url": "https://github.com/marcuspmd/protect-my-env/issues"
   },
-  "homepage": "https://github.com/marcusp/protect-my-env#readme",
+  "homepage": "https://github.com/marcuspmd/protect-my-env#readme",
   "license": "MIT",
   "keywords": [
     "env",
