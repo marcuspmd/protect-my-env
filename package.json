@@ -1,22 +1,36 @@
 {
   "name": "protect-my-env",
   "displayName": "Protect My Env",
-  "description": "Protects your .env files from accidental screen exposure and keeps them safe from AI agents.",
+  "description": "Protects your .env files from accidental screen exposure.",
   "version": "0.1.0",
   "publisher": "marcusp",
   "icon": "icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/marcusp/protect-my-env"
+  },
+  "bugs": {
+    "url": "https://github.com/marcusp/protect-my-env/issues"
+  },
+  "homepage": "https://github.com/marcusp/protect-my-env#readme",
+  "license": "MIT",
+  "keywords": [
+    "env",
+    "dotenv",
+    "security",
+    "secrets",
+    "mask",
+    "privacy",
+    "environment variables"
+  ],
   "engines": {
     "vscode": "^1.75.0"
   },
   "categories": [
-    "Security",
     "Linters",
     "Other"
   ],
   "main": "./out/extension.js",
-  "activationEvents": [
-    "*"
-  ],
   "contributes": {
     "configuration": {
       "title": "Protect My Env",
@@ -82,10 +96,21 @@
         "command": "protectMyEnv.hideAll",
         "title": "Hide All Values",
         "icon": "$(eye-closed)"
-      },
+      }
+    ],
+    "customEditors": [
       {
-        "command": "protectMyEnv.createIgnoreFiles",
-        "title": "Protect from AI: Create/Update AI Ignore Settings"
+        "viewType": "protectMyEnv.secureEnvEditor",
+        "displayName": "Protect My Env Secure Editor",
+        "selector": [
+          {
+            "filenamePattern": "*.env"
+          },
+          {
+            "filenamePattern": "*.env.*"
+          }
+        ],
+        "priority": "default"
       }
     ],
     "menus": {
@@ -108,12 +133,21 @@
     "esbuild-base": "node esbuild.js",
     "esbuild": "npm run esbuild-base -- --sourcemap",
     "watch": "node esbuild.js --watch",
-    "compile": "tsc -p ./"
+    "compile": "tsc -p ./",
+    "test": "jest --config jest.config.cjs",
+    "test:watch": "jest --config jest.config.cjs --watch",
+    "test:coverage": "jest --config jest.config.cjs --coverage"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.14",
     "@types/node": "^18.11.18",
     "@types/vscode": "^1.75.0",
     "esbuild": "^0.20.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.4.0",
     "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "@fortawesome/free-solid-svg-icons": "^7.2.0"
   }
 }

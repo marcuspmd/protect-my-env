@@ -1,66 +1,195 @@
-# Protect My Env - VS Code Extension
+# Protect My Env
 
-Esta extensão protege arquivos `.env` contra exposição visual acidental de dados sensíveis na tela (ideal para apresentações, compartilhamento de tela ou transmissões ao vivo) e fornece suporte para mitigar a leitura de credenciais por agentes de IA.
+<p align="center">
+  <img src="https://raw.githubusercontent.com/marcusp/protect-my-env/main/icon.png" alt="Protect My Env Icon" width="128" />
+</p>
 
----
+<p align="center">
+  <strong>Keep your .env secrets hidden on screen — without compromising your workflow.</strong>
+</p>
 
-## ✨ Recursos
-
-1. **Ocultação de Valores:** Oculta visualmente os valores das variáveis de ambiente com `••••••••` ou com comprimento customizado, mantendo as chaves legíveis.
-2. **Ocultação de Comentários (Opcional):** Permite mascarar comentários de linha inteira (ex: `# Config`) e comentários inline (ex: `DB_PASS=123 # senha`). Comentários inline são revelados dinamicamente junto com o valor da sua variável correspondente.
-3. **Ações Rápidas Inline (CodeLens):**
-   - `👁️ Reveal KEY`: Revela individualmente o valor de uma variável específica e seu comentário inline.
-   - `🙈 Hide KEY`: Mascara novamente a variável revelada.
-   - `➕ Hide KEY`: Adiciona a variável selecionada às regras personalizadas de ocultação.
-4. **Controles Globais do Editor:** Botões dedicados na barra de ferramentas do editor (canto superior direito) para **Revelar Tudo** (`👁️`) ou **Esconder Tudo** (`🙈`).
-5. **Filtros por Padrões (Wildcards):** Oculte chaves usando padrões clássicos (ex: `*_SECRET`, `*_KEY`, `*_PASSWORD`, `*_TOKEN`).
-6. **Mitigação de Agentes de IA:** Comando rápido na paleta de comandos para gerar ou atualizar regras no `.gitignore` e no `.copilotignore` para instruir os agentes de IA a ignorarem a indexação de arquivos de ambiente.
-
----
-
-## ⚙️ Configurações (`settings.json`)
-
-Você pode configurar o comportamento da extensão em suas configurações do VS Code:
-
-* `protectMyEnv.obfuscationMode`: Define se deve ocultar todas as chaves (`all`) ou apenas aquelas que correspondem a regras/padrões (`pattern`). *Padrão: `"all"`*.
-* `protectMyEnv.patterns`: Lista de padrões glob para ocultação (ex: `["*_SECRET", "*_KEY"]`). *Padrão: `["*_SECRET", "*_KEY", "*_PASSWORD", "*_TOKEN", "PASSWORD", "SECRET", "TOKEN", "KEY"]`*.
-* `protectMyEnv.rules`: Lista exata de chaves a ocultar (gerenciada automaticamente ao clicar no CodeLens `➕ Hide KEY`).
-* `protectMyEnv.maskCharacter`: Caractere visual de máscara. *Padrão: `"•"`*.
-* `protectMyEnv.maskLength`: Número fixo de caracteres exibidos. Se configurado como `0`, o tamanho visual corresponderá ao comprimento real do valor da variável. *Padrão: `8`*.
-* `protectMyEnv.protectComments`: Se habilitado (`true`), oculta visualmente comentários (linha inteira e inline) sob as mesmas regras de máscara. *Padrão: `false`*.
+<p align="center">
+  <a href="https://marketplace.visualstudio.com/items?itemName=marcusp.protect-my-env">
+    <img src="https://img.shields.io/visual-studio-marketplace/v/marcusp.protect-my-env?label=VS%20Code%20Marketplace&color=blue" alt="Marketplace Version" />
+  </a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=marcusp.protect-my-env">
+    <img src="https://img.shields.io/visual-studio-marketplace/d/marcusp.protect-my-env?color=green" alt="Downloads" />
+  </a>
+  <a href="./LICENSE">
+    <img src="https://img.shields.io/badge/license-MIT-brightgreen" alt="MIT License" />
+  </a>
+</p>
 
 ---
 
-## 🚀 Como Executar e Depurar Localmente
-
-1. Abra a pasta do projeto no VS Code.
-2. Compile o código executando no terminal:
-   ```bash
-   npm run compile
-   ```
-3. Pressione a tecla **F5** no teclado para iniciar a janela **Extension Development Host**.
-4. Abra o arquivo `test.env` contido na pasta raiz e experimente os CodeLenses e os botões de controle na barra de ferramentas.
+![Protect My Env Banner](https://raw.githubusercontent.com/marcusp/protect-my-env/main/docs/preview-real.png)
 
 ---
 
-## 🏗️ Comandos Disponíveis (Scripts)
+## Why Protect My Env?
 
-* `npm run compile`: Compila o TypeScript em modo estrito.
-* `npm run esbuild-base`: Empacota os arquivos TypeScript em um único bundle em `out/extension.js` via esbuild.
-* `npm run watch`: Executa o bundler esbuild em modo de observação em background para auto-compilar a cada alteração.
-* `npm run vscode:prepublish`: Compila e minifica o código para publicação/produção.
+Every time you open a `.env` file in VS Code, your secrets are visible in plain text — in editor tabs, during screen shares, in recordings, and in pair-programming sessions. **Protect My Env** solves this by rendering secrets as masked characters from the very first frame, with zero workflow disruption.
 
 ---
 
-## 📦 Como Publicar ou Gerar Pacote VSIX
+## Features
 
-Para gerar o arquivo `.vsix` instalável para o VS Code:
-1. Instale o utilitário `vsce` globalmente:
-   ```bash
-   npm install -g @vscode/vsce
-   ```
-2. Gere o pacote de distribuição:
-   ```bash
-   vsce package
-   ```
-3. O arquivo `protect-my-env-0.1.0.vsix` será gerado. Você pode instalá-lo diretamente no VS Code acessando a aba Extensions -> ícone de três pontos `...` -> **Install from VSIX...**.
+| Feature | Description |
+|---|---|
+| 🔒 **Secure Editor** | `.env` files open masked by default — no plaintext flash |
+| 👁️ **Per-key Reveal** | Reveal or hide individual values with a single click via CodeLens |
+| 🌐 **Reveal All / Hide All** | Toolbar buttons to toggle all values at once |
+| 🔍 **Search & Sort** | Filter by key or comment; sort by key column without touching file order |
+| 🎭 **Two Masking Modes** | `all` masks every key; `pattern` masks only keys matching glob patterns |
+| 💬 **Comment Protection** | Optionally mask full-line and inline comments too |
+| ✏️ **Inline Editing** | Edit values directly in the secure view |
+| 📝 **Open as Text** | Fall back to the standard VS Code editor any time |
+
+---
+
+## Preview
+
+![Protect My Env in action](https://raw.githubusercontent.com/marcusp/protect-my-env/main/docs/preview-real.png)
+
+---
+
+## Installation
+
+### From the Marketplace
+
+1. Open VS Code.
+2. Press `Ctrl+Shift+X` (or `Cmd+Shift+X` on macOS) to open the Extensions panel.
+3. Search for **Protect My Env**.
+4. Click **Install**.
+
+### From VSIX (manual)
+
+```bash
+npm install -g @vscode/vsce
+vsce package
+```
+
+Then in VS Code: **Extensions → ··· → Install from VSIX…** and select the generated `.vsix` file.
+
+---
+
+## Quick Start
+
+1. Open any `.env`, `.env.local`, `.env.production`, or similar file.
+2. The file opens automatically in **Secure .env Mode** — values are masked from the first render.
+3. Use the **CodeLens** actions above each key:
+   - **Reveal KEY** — temporarily show the value
+   - **Hide KEY** — mask it again
+4. Use the **toolbar buttons** to control all values at once:
+   - **Reveal All Values** (`👁`)
+   - **Hide All Values** (`👁‍🗨`)
+
+---
+
+## Secure .env Mode
+
+The custom editor opens `.env` files in a table view where secrets are masked before any rendering occurs — eliminating the "decoration flash" you get with text-editor overlays.
+
+- **Search** filters keys and comments in real time.
+- **Click the Key column header** to sort the view without altering the file.
+- **Full-line comments** appear as comment rows; **inline comments** show in a separate column.
+- **Row action icons** let you reveal, edit, add, or delete values (hover for tooltips).
+- Click **Open as text** at any time to switch to the regular VS Code editor.
+
+---
+
+## Configuration
+
+Add any of the following to your `settings.json`:
+
+```json
+{
+  "protectMyEnv.obfuscationMode": "all",
+  "protectMyEnv.patterns": [
+    "*_SECRET",
+    "*_KEY",
+    "*_PASSWORD",
+    "*_TOKEN",
+    "PASSWORD",
+    "SECRET",
+    "TOKEN",
+    "KEY"
+  ],
+  "protectMyEnv.rules": [],
+  "protectMyEnv.maskCharacter": "•",
+  "protectMyEnv.maskLength": 8,
+  "protectMyEnv.protectComments": false
+}
+```
+
+### Setting Reference
+
+| Setting | Type | Default | Description |
+|---|---|---|---|
+| `obfuscationMode` | `string` | `"all"` | `"all"` masks every key; `"pattern"` masks only keys matching `patterns` |
+| `patterns` | `string[]` | see above | Glob patterns applied in `pattern` mode (case-insensitive) |
+| `rules` | `string[]` | `[]` | Exact key names that are always masked regardless of mode |
+| `maskCharacter` | `string` | `"•"` | Character used to render masked values |
+| `maskLength` | `number` | `8` | Fixed mask length; set to `0` to match the original value length |
+| `protectComments` | `boolean` | `false` | When `true`, masks full-line and inline comments |
+
+---
+
+## Development
+
+### Prerequisites
+
+- Node.js ≥ 18
+- VS Code ≥ 1.75
+
+### Setup
+
+```bash
+git clone https://github.com/marcusp/protect-my-env.git
+cd protect-my-env
+npm install
+npm run compile
+```
+
+Press **F5** to launch the Extension Development Host.
+
+### Testing
+
+```bash
+npm test                  # Run all unit tests
+npm run test:watch        # Watch mode
+npm run test:coverage     # With coverage report
+```
+
+---
+
+## Contributing
+
+Contributions are welcome! Please read [CONTRIBUTING.md](./CONTRIBUTING.md) before opening a pull request.
+
+---
+
+## License
+
+[MIT](./LICENSE) © Marcus P
+
+## Publishing
+
+```bash
+npm run vscode:prepublish
+```
+
+## Scripts
+
+- npm run compile
+- npm run esbuild-base
+- npm run esbuild
+- npm run watch
+- npm run vscode:prepublish
+- npm test
+- npm run test:watch
+- npm run test:coverage
+
+## License
+
+Choose and add a license before publishing (for example, MIT).

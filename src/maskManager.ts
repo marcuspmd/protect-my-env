@@ -3,10 +3,16 @@ import { EnvParser } from './parser';
 import { ObfuscationMatcherManager } from './matchers';
 import { ConfigManager } from './config';
 
+interface ParsedDocumentCache {
+  version?: number;
+  parsedLines: ReturnType<typeof EnvParser.parse>;
+}
+
 export class MaskManager implements vscode.Disposable {
   private readonly decorationType: vscode.TextEditorDecorationType;
   private readonly revealedKeys: Map<string, Set<string>> = new Map();
   private readonly revealAllDocs: Set<string> = new Set();
+  private readonly parsedDocumentCache: Map<string, ParsedDocumentCache> = new Map();
 
   constructor(private readonly matcherManager: ObfuscationMatcherManager) {
     // Hack: Inject 'display: none' via the textDecoration property to hide the original text
@@ -38,7 +44,7 @@ export class MaskManager implements vscode.Disposable {
     }
 
     const docRevealedKeys = this.revealedKeys.get(uriStr) || new Set<string>();
-    const parsedLines = EnvParser.parse(document.getText());
+    const parsedLines = this.getParsedLines(document);
     const decorationOptions: vscode.DecorationOptions[] = [];
 
     const maskChar = ConfigManager.getMaskCharacter();
@@ -120,6 +126,24 @@ export class MaskManager implements vscode.Disposable {
     }
 
     editor.setDecorations(this.decorationType, decorationOptions);
+  }
+
+  /**
+   * Eagerly parses an env document so the first visible render can use cached data.
+   */
+  public warmupDocument(document: vscode.TextDocument): void {
+    if (!this.isEnvFile(document)) {
+      return;
+    }
+
+    this.getParsedLines(document);
+  }
+
+  /**
+   * Clears parsing cache for closed documents to avoid stale entries.
+   */
+  public clearDocumentCache(document: vscode.TextDocument): void {
+    this.parsedDocumentCache.delete(document.uri.toString());
   }
 
   /**
@@ -216,7 +240,26 @@ export class MaskManager implements vscode.Disposable {
     return filename.endsWith('.env') || filename.includes('.env.');
   }
 
+  private getParsedLines(document: vscode.TextDocument): ReturnType<typeof EnvParser.parse> {
+    const uriStr = document.uri.toString();
+    const currentVersion = document.version;
+    const cachedEntry = this.parsedDocumentCache.get(uriStr);
+
+    if (cachedEntry && cachedEntry.version !== undefined && currentVersion !== undefined && cachedEntry.version === currentVersion) {
+      return cachedEntry.parsedLines;
+    }
+
+    const parsedLines = EnvParser.parse(document.getText());
+    this.parsedDocumentCache.set(uriStr, {
+      version: currentVersion,
+      parsedLines,
+    });
+
+    return parsedLines;
+  }
+
   public dispose(): void {
+    this.parsedDocumentCache.clear();
     this.decorationType.dispose();
   }
 }

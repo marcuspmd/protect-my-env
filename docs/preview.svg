@@ -1,0 +1,41 @@
+<svg width="1280" height="640" viewBox="0 0 1280 640" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Protect My Env preview banner">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b1220"/>
+      <stop offset="100%" stop-color="#1f2a44"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#17233a"/>
+      <stop offset="100%" stop-color="#24324f"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1280" height="640" fill="url(#bg)"/>
+
+  <rect x="74" y="74" width="1132" height="492" rx="20" fill="url(#card)" stroke="#3d4f76" stroke-width="2"/>
+
+  <text x="120" y="170" font-family="Segoe UI, Arial, sans-serif" font-size="54" fill="#e8f0ff" font-weight="700">
+    Protect My Env
+  </text>
+  <text x="120" y="220" font-family="Segoe UI, Arial, sans-serif" font-size="28" fill="#a9bedf">
+    Keep .env secrets masked while you code, demo, and share your screen.
+  </text>
+
+  <rect x="120" y="276" width="1040" height="230" rx="14" fill="#0f182a" stroke="#3a4d76" stroke-width="2"/>
+
+  <text x="160" y="340" font-family="Consolas, Monaco, monospace" font-size="27" fill="#8cb4ff">DB_USER=admin</text>
+  <text x="160" y="387" font-family="Consolas, Monaco, monospace" font-size="27" fill="#8cb4ff">DB_PASSWORD=</text>
+  <text x="402" y="387" font-family="Consolas, Monaco, monospace" font-size="27" fill="#8be9a8">********</text>
+  <text x="160" y="434" font-family="Consolas, Monaco, monospace" font-size="27" fill="#8cb4ff">API_TOKEN=</text>
+  <text x="345" y="434" font-family="Consolas, Monaco, monospace" font-size="27" fill="#8be9a8">********</text>
+
+  <rect x="865" y="308" width="255" height="50" rx="10" fill="#35578f"/>
+  <text x="887" y="341" font-family="Segoe UI, Arial, sans-serif" font-size="22" fill="#ffffff" font-weight="600">Reveal All Values</text>
+
+  <rect x="865" y="374" width="255" height="50" rx="10" fill="#425f31"/>
+  <text x="898" y="407" font-family="Segoe UI, Arial, sans-serif" font-size="22" fill="#ffffff" font-weight="600">Hide All Values</text>
+
+  <text x="120" y="555" font-family="Segoe UI, Arial, sans-serif" font-size="21" fill="#90a7cc">
+    Includes .gitignore and .copilotignore helper command for AI indexing safety.
+  </text>
+</svg>

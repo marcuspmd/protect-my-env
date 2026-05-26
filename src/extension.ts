@@ -3,7 +3,7 @@ import { ObfuscationMatcherManager } from './matchers';
 import { MaskManager } from './maskManager';
 import { EnvCodeLensProvider } from './codeLensProvider';
 import { ConfigManager } from './config';
-import { createIgnoreFiles } from './ignoreFiles';
+import { EnvSecureEditorProvider } from './envSecureEditorProvider';
 
 export function activate(context: vscode.ExtensionContext): void {
   console.log('Protect My Env extension is now active!');
@@ -20,6 +20,20 @@ export function activate(context: vscode.ExtensionContext): void {
 
   const maskManager = new MaskManager(matcherManager);
   context.subscriptions.push(maskManager);
+
+  const secureEditorProvider = new EnvSecureEditorProvider(matcherManager);
+  context.subscriptions.push(secureEditorProvider);
+  context.subscriptions.push(
+    vscode.window.registerCustomEditorProvider(
+      EnvSecureEditorProvider.viewType,
+      secureEditorProvider,
+      {
+        webviewOptions: {
+          retainContextWhenHidden: true,
+        },
+      }
+    )
+  );
 
   const codeLensProvider = new EnvCodeLensProvider(maskManager, (key: string) => matcherManager.shouldMask(key));
 
@@ -84,13 +98,6 @@ export function activate(context: vscode.ExtensionContext): void {
     })
   );
 
-  // Create .gitignore and .copilotignore rules
-  context.subscriptions.push(
-    vscode.commands.registerCommand('protectMyEnv.createIgnoreFiles', async () => {
-      await createIgnoreFiles();
-    })
-  );
-
   // 4. Editor Event Listeners
 
   // Update decorations when switching editors
@@ -105,14 +112,36 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     vscode.window.onDidChangeVisibleTextEditors((editors) => {
       for (const editor of editors) {
+        maskManager.warmupDocument(editor.document);
         maskManager.applyDecorations(editor);
       }
+    })
+  );
+
+  // Parse env files eagerly when opened to reduce initial reveal flashes.
+  context.subscriptions.push(
+    vscode.workspace.onDidOpenTextDocument((document) => {
+      maskManager.warmupDocument(document);
+
+      for (const editor of vscode.window.visibleTextEditors) {
+        if (editor.document.uri.toString() === document.uri.toString()) {
+          maskManager.applyDecorations(editor);
+        }
+      }
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.workspace.onDidCloseTextDocument((document) => {
+      maskManager.clearDocumentCache(document);
     })
   );
 
   // Update decorations when document text changes
   context.subscriptions.push(
     vscode.workspace.onDidChangeTextDocument((event) => {
+      maskManager.warmupDocument(event.document);
+
       const activeEditor = vscode.window.activeTextEditor;
       if (activeEditor && event.document.uri.toString() === activeEditor.document.uri.toString()) {
         maskManager.applyDecorations(activeEditor);
@@ -147,6 +176,7 @@ export function activate(context: vscode.ExtensionContext): void {
   const activeEditor = vscode.window.activeTextEditor;
   maskManager.updateContextKeys(activeEditor);
   for (const visibleEditor of vscode.window.visibleTextEditors) {
+    maskManager.warmupDocument(visibleEditor.document);
     maskManager.applyDecorations(visibleEditor);
   }
 }
