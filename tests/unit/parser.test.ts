@@ -15,6 +15,22 @@ describe('EnvParser', () => {
       expect(line.commentEndOffset).toBe(11);
     });
 
+    it('falls back to comment offset 0 when hash index lookup is unavailable', () => {
+      const originalIndexOf = String.prototype.indexOf;
+      const indexSpy = jest.spyOn(String.prototype, 'indexOf').mockImplementation(function (this: string, searchString: string): number {
+        if (searchString === '#') {
+          return -1;
+        }
+        return originalIndexOf.call(this, searchString);
+      });
+
+      const line = EnvParser.parseLine('# comment', 0);
+
+      expect(line.type).toBe('comment');
+      expect(line.commentStartOffset).toBe(0);
+      indexSpy.mockRestore();
+    });
+
     it('parses simple key-value pairs', () => {
       const line = EnvParser.parseLine('API_KEY=secret', 1);
       expect(line.type).toBe('pair');
@@ -47,14 +63,52 @@ describe('EnvParser', () => {
       expect(line.commentEndOffset).toBe(15);
     });
 
+    it('skips leading spaces before unquoted value', () => {
+      const line = EnvParser.parseLine('KEY=   value', 0);
+
+      expect(line.type).toBe('pair');
+      expect(line.value).toBe('value');
+      expect(line.valueStartOffset).toBe(7);
+    });
+
+    it('handles escaped characters inside quoted values', () => {
+      const line = EnvParser.parseLine('KEY="a\\"b"', 0);
+
+      expect(line.type).toBe('pair');
+      expect(line.value).toBe('"a\\"b"');
+    });
+
     it('treats invalid key lines as comments', () => {
       const line = EnvParser.parseLine('A B=1', 0);
       expect(line.type).toBe('comment');
     });
 
+    it('captures hash offsets for lines without equals', () => {
+      const line = EnvParser.parseLine('invalid # comment', 0);
+
+      expect(line.type).toBe('comment');
+      expect(line.commentStartOffset).toBe(8);
+      expect(line.commentEndOffset).toBe(17);
+    });
+
+    it('captures hash offsets for invalid key lines', () => {
+      const line = EnvParser.parseLine('A B=1 # note', 0);
+
+      expect(line.type).toBe('comment');
+      expect(line.commentStartOffset).toBe(6);
+      expect(line.commentEndOffset).toBe(12);
+    });
+
     it('treats lines without equals as comments', () => {
       const line = EnvParser.parseLine('just-text', 0);
       expect(line.type).toBe('comment');
+    });
+
+    it('trims trailing spaces for unterminated quoted value', () => {
+      const line = EnvParser.parseLine("KEY='unfinished   ", 0);
+
+      expect(line.type).toBe('pair');
+      expect(line.value).toBe("'unfinished");
     });
   });
 
