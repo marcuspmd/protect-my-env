@@ -101,6 +101,15 @@ export function activate(context: vscode.ExtensionContext): void {
     })
   );
 
+  // Update decorations as soon as editor windows become visible to reduce rendering delay
+  context.subscriptions.push(
+    vscode.window.onDidChangeVisibleTextEditors((editors) => {
+      for (const editor of editors) {
+        maskManager.applyDecorations(editor);
+      }
+    })
+  );
+
   // Update decorations when document text changes
   context.subscriptions.push(
     vscode.workspace.onDidChangeTextDocument((event) => {

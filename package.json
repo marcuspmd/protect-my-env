@@ -14,10 +14,7 @@
   ],
   "main": "./out/extension.js",
   "activationEvents": [
-    "onLanguage:properties",
-    "onLanguage:dotenv",
-    "onFile:**/.*env*",
-    "onFile:**/*env*"
+    "*"
   ],
   "contributes": {
     "configuration": {
