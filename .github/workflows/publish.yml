@@ -45,11 +45,11 @@ jobs:
         env:
           COSIGN_VERSION: v2.4.1
         run: |
-          curl -sSfL -o cosign "https://github.com/sigstore/cosign/releases/download/${COSIGN_VERSION}/cosign-linux-amd64"
+          curl -sSfL -o cosign-linux-amd64 "https://github.com/sigstore/cosign/releases/download/${COSIGN_VERSION}/cosign-linux-amd64"
           curl -sSfL -o cosign_checksums.txt "https://github.com/sigstore/cosign/releases/download/${COSIGN_VERSION}/cosign_checksums.txt"
           grep " cosign-linux-amd64$" cosign_checksums.txt | shasum -a 256 -c -
-          chmod +x cosign
-          sudo mv cosign /usr/local/bin/cosign
+          chmod +x cosign-linux-amd64
+          sudo mv cosign-linux-amd64 /usr/local/bin/cosign
           cosign version
 
       - name: Sign VSIX artifact (keyless)
