@@ -2,9 +2,11 @@ name: CodeQL Analysis
 
 on:
   push:
-    branches: [master, main]
+    branches:
+      - "**"
   pull_request:
-    branches: [master, main]
+    branches:
+      - "**"
   schedule:
     # Run every Monday at 08:00 UTC
     - cron: '0 8 * * 1'
