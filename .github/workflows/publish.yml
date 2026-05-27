@@ -70,7 +70,11 @@ jobs:
           generate_release_notes: true
 
       - name: Publish to VS Code Marketplace
-        if: ${{ secrets.VSCE_PAT != '' }}
-        run: vsce publish --no-dependencies
+        run: |
+          if [ -n "${VSCE_PAT}" ]; then
+            vsce publish --no-dependencies
+          else
+            echo "VSCE_PAT is not set. Skipping VS Code Marketplace publish."
+          fi
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
