@@ -9,11 +9,11 @@
 </p>
 
 <p align="center">
-  <a href="https://marketplace.visualstudio.com/items?itemName=marcusp.protect-my-env">
-    <img src="https://img.shields.io/visual-studio-marketplace/v/marcusp.protect-my-env?label=VS%20Code%20Marketplace&color=blue" alt="Marketplace Version" />
+  <a href="https://marketplace.visualstudio.com/items?itemName=marcuspmd.protect-my-env">
+    <img src="https://img.shields.io/visual-studio-marketplace/v/marcuspmd.protect-my-env?label=VS%20Code%20Marketplace&color=blue" alt="Marketplace Version" />
   </a>
-  <a href="https://marketplace.visualstudio.com/items?itemName=marcusp.protect-my-env">
-    <img src="https://img.shields.io/visual-studio-marketplace/d/marcusp.protect-my-env?color=green" alt="Downloads" />
+  <a href="https://marketplace.visualstudio.com/items?itemName=marcuspmd.protect-my-env">
+    <img src="https://img.shields.io/visual-studio-marketplace/d/marcuspmd.protect-my-env?color=green" alt="Downloads" />
   </a>
   <a href="./LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-brightgreen" alt="MIT License" />
